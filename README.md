@@ -1,9 +1,9 @@
 # Advent of Code 2021
-Time for each puzzle to run (+ input parsing) in **milliseconds**.
+Time for each puzzle to run (+ input parsing) in **milliseconds** (1/1000 of a second).
 
 |Day|Puzzle 1|Puzzle 2|
 |--:|--:|--:|
-|01| | |
+|01|0.1342|0.6300|
 |02| | |
 |03| | |
 |04| | |
