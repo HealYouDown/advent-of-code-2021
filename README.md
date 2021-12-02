@@ -4,7 +4,7 @@ Time for each puzzle to run (+ input parsing) in **milliseconds** (1/1000 of a s
 |Day|Puzzle 1|Puzzle 2|
 |--:|--:|--:|
 |01|0.1342|0.6300|
-|02| | |
+|02|0.0761|0.0907|
 |03| | |
 |04| | |
 |05| | |
