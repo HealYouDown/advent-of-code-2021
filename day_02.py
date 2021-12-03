@@ -23,8 +23,7 @@ def puzzle_2(data):
     for cmd, value in data:
         if cmd == "forward":
             x += value
-            if aim != 0:
-                y += aim * value
+            y += aim * value
         elif cmd == "up":
             aim -= value
         elif cmd == "down":
