@@ -5,7 +5,7 @@ Time for each puzzle to run (input parsing is not included) in **milliseconds** 
 |--:|--:|--:|
 |01|0.1342|0.6300|
 |02|0.0761|0.0907|
-|03| | |
+|03|2.0719|8.7995|
 |04| | |
 |05| | |
 |06| | |
