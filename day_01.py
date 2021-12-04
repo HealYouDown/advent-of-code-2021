@@ -1,3 +1,4 @@
+from typing import List
 from utils import timer, get_input_data
 
 
@@ -36,9 +37,14 @@ def puzzle_2(data):
 
     return increased_counter
 
+
+@timer
+def parse_input() -> List[int]:
+    return [int(i) for i in get_input_data(day=1).splitlines()]
+
+
 if __name__ == "__main__":
-    data = [int(i)
-            for i in get_input_data(day=1).splitlines()]
+    data = parse_input()
 
     print(puzzle_1(data))
     print(puzzle_2(data))

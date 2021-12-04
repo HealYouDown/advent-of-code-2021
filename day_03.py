@@ -63,8 +63,13 @@ def puzzle_2(data: List[str]):
     return oxygen_generator_rate * co2_scrubbing_rate
 
 
+@timer
+def parse_input() -> List[str]:
+    return [bit_repr for bit_repr in get_input_data(day=3).splitlines()]
+
+
 if __name__ == "__main__":
-    data = [bit_repr for bit_repr in get_input_data(day=3).splitlines()]
+    data = parse_input()
 
     print(puzzle_1(data))
     print(puzzle_2(data))

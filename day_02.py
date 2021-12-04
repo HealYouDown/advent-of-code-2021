@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from utils import timer, get_input_data
 
 
@@ -32,11 +33,18 @@ def puzzle_2(data):
     return x * y
 
 
-if __name__ == "__main__":
+@timer
+def parse_input() -> List[Tuple[str, int]]:
     data = []
     for line in get_input_data(day=2).splitlines():
         s = line.split()
         data.append((s[0], int(s[1])))
+
+    return data
+
+
+if __name__ == "__main__":
+    data = parse_input()
 
     print(puzzle_1(data))
     print(puzzle_2(data))
