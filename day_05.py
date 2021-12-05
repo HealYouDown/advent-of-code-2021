@@ -1,9 +1,10 @@
-from typing import Dict, List, Tuple
-from utils import get_input_data, timer
 from collections import defaultdict
+from typing import Dict, List, Tuple
 
+from utils import get_input_data, timer
 
 POINT = Tuple[int, int]
+
 
 class Line:
     def __init__(self, p1: POINT, p2: POINT) -> None:
