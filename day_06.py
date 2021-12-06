@@ -9,7 +9,6 @@ def calculate_children_after_n_days(num: int, days: int) -> int:
     arr = np.array([num], dtype=np.uint8)
 
     for _ in range(days):
-        # Still to slow at 200+ days
         count = np.count_nonzero(arr == 0)  # Count 0 that will spawn new fish
         arr = np.where(arr == 0, arr + 6, arr - 1)  # Set zeros to 6 and everything else -1
         arr = np.concatenate([arr, np.full(count, 8, dtype=np.uint8)])  # add new 8 fish 
@@ -45,4 +44,4 @@ if __name__ == "__main__":
     data = parse_input()
 
     print(puzzle_1(data))
-    # print(puzzle_2(data))
+    print(puzzle_2(data))

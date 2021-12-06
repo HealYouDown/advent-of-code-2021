@@ -8,7 +8,7 @@ Time for each puzzle to run in **milliseconds** (1/1000 of a second).
 |03|0.1621|2.0719|8.7995|
 |04|0.7945|8.1599|32.9093|
 |05|1.1593|44.7081|73.8323|
-|06| | | |
+|06|0.1216|8.6164|1658271.7151 <sup>*1</sup>|
 |07| | | |
 |08| | | |
 |09| | | |
@@ -28,3 +28,5 @@ Time for each puzzle to run in **milliseconds** (1/1000 of a second).
 |23| | | |
 |24| | | |
 |25| | | |
+
+<sup>*1</sup> ~27,63 minutes
