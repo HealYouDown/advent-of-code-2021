@@ -4,9 +4,7 @@ from utils import get_input_data, timer
 import sys
 
 
-
-
-
+# That class is so useless
 class CrabMarine:
     def __init__(self, pos: int) -> None:
         self._pos = pos
@@ -17,6 +15,7 @@ class CrabMarine:
 
     def calculate_fuel_cost(self, to: int) -> int:
         return abs(self._pos - to)
+
 
 @timer
 def puzzle_1(crabs: List[CrabMarine]) -> int:
