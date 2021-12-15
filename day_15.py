@@ -1,79 +1,85 @@
-from typing import List, Tuple
+from collections import defaultdict
+from typing import Dict, List, TypeVar
+
 from utils import get_input_data, timer
 import numpy as np
-import enum
 
-class Direction(enum.Enum):
-    NONE = 0
-    LEFT = 1
-    RIGHT = 2
-    UP = 3
-    DOWN = 4
+# Tried doing it with a simple graph search, but that's way too slow
+# Don't know about search algorithms, so not gonna bother with this puzzle.
 
+TKey = TypeVar("TKey")
+Path = List[TKey]
 
-def get_paths(
-    arr: np.ndarray,
-    from_: Tuple[int, int],
-    to: Tuple[int, int],
-    current_position: Tuple[int, int],
-    last_direction: Direction,
-    current_path: List[int],
-    all_paths: List[Tuple[int]],
-    path_length_limit: int,
-):
-    cy, cx = current_position
-    current_path.append(arr[cy, cx])
+class Node:
+    def __init__(
+        self,
+        key: TKey,
+        neighbors: List[TKey],
+        **additional_data
+    ) -> None:
+        self._key = key
+        self._neighbors = neighbors
+        self._additional_data = additional_data
 
-    if current_position == to:  # Path that reached the to position
-        all_paths.extend(current_path)
-        return all_paths
+    def __repr__(self) -> str:
+        return f"<Node {self._key}>"
 
-    if len(current_path) == path_length_limit:
-        all_paths.extend(current_path)
-        return all_paths
+    @property
+    def key(self) -> TKey:
+        return self._key
 
-    # Branch out sub paths, but don't go back to the field where we came from
-
-    # Branch out path LEFT
-    if cx > 0 and last_direction != Direction.RIGHT:
-        all_paths.extend(get_paths(arr, from_, to, (cy, cx-1), Direction.LEFT, list(current_path), [], path_length_limit))
-    # Branch out RIGHT
-    if cx < (np.size(arr, 1) - 1) and last_direction != Direction.LEFT:
-        all_paths.extend(get_paths(arr, from_, to, (cy, cx+1), Direction.RIGHT, list(current_path), [], path_length_limit))
-    # Branch out path UP
-    # if cy > 0 and last_direction != Direction.DOWN:
-    #     all_paths.extend(get_paths(arr, from_, to, (cy-1, cx), Direction.UP, list(current_path), [], path_length_limit))
-    # Branch out DOWN
-    if cy < (np.size(arr, 1) - 1) and last_direction != Direction.UP:
-        all_paths.extend(get_paths(arr, from_, to, (cy+1, cx), Direction.DOWN, list(current_path), [], path_length_limit))
-
-    return all_paths
+    @property
+    def neighbors(self) -> List[TKey]:
+        return self._neighbors
 
 
-@timer
-def puzzle_1(arr: np.ndarray):
-    y_length = np.size(arr, 0)
-    x_length = np.size(arr, 1)
+class Graph:
+    def __init__(self, nodes: List[Node]) -> None:
+        self._nodes = nodes
+        self._graph: Dict[TKey, Node] = {node.key: node for node in nodes}
 
-    top_left = (0, 0)
-    bottom_right = (y_length - 1, x_length - 1)
+    def get_paths_between(
+        self,
+        start_key: TKey,
+        end_key: TKey,
+    ) -> List[List[Node]]:
+        visited = defaultdict(lambda: False)
+        found_paths = []
 
-    paths = get_paths(
-        arr=arr,
-        from_=top_left,
-        to=bottom_right,
-        current_position=top_left,
-        last_direction=Direction.NONE,
-        current_path=[],
-        all_paths=[],
-        path_length_limit=25,
-    )
-    print(paths)
+        self._get_paths_between_recursive(
+            start_key,
+            end_key,
+            visited,
+            [],
+            found_paths,
+        )
 
+        return [
+            [self._graph[k] for k in path]
+            for path in found_paths
+        ]
 
-@timer
-def puzzle_2():
-    pass
+    def _get_paths_between_recursive(
+        self,
+        key: TKey,
+        end: TKey,
+        visited: Dict[TKey, bool],
+        path: Path,
+        found_path: List[Path],
+    ) -> None:
+        visited[key] = True
+        path.append(key)
+
+        if key == end:
+            found_path.append(list(path))
+        else:
+            for neighbor in self._graph[key].neighbors:
+                if not visited[neighbor]:
+                    self._get_paths_between_recursive(
+                        neighbor, end, visited, path, found_path)
+
+        visited[key] = False
+        path.pop(-1)
 
 
 @timer
@@ -83,11 +89,30 @@ def parse_input() -> np.ndarray:
         for line in get_input_data(day=15).splitlines()
     ]
 
-    return np.array(rows, dtype=np.uint)
-    
+    return np.array(rows, dtype=np.uint8)
+
 
 if __name__ == "__main__":
     arr = parse_input()
-    print(arr)
+    arr_x_length = np.size(arr, 1)
+    arr_y_length = np.size(arr, 0)
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
-    print(puzzle_1(arr))
+    nodes = []
+    for x in range(arr_x_length):
+        for y in range(arr_y_length):
+            neighbors = []
+            for dy, dx in directions:
+                nx = x + dx
+                ny = y + dy
+                
+                if nx >= 0 and nx < arr_x_length and ny >= 0 and ny < arr_y_length:
+                    neighbors.append((ny, nx))
+
+            node = Node(key=(y, x), neighbors=neighbors, value=arr[y, x])
+            nodes.append(node)
+
+    print(nodes)
+    graph = Graph(nodes=nodes)
+    paths = graph.get_paths_between((0, 0), (9, 9))
+    print(paths)
