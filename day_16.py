@@ -1,17 +1,17 @@
-from typing import List, Optional
+from typing import Generator, List, Optional
 from utils import get_input_data, timer
+import numpy as np
 
 
 def hex_to_bin(hex_: str) -> str:
     return "".join([bin(int(char, 16))[2:].rjust(4, "0") for char in hex_])
 
 
-def flatten(container: list):
-    for item in container:
-        if isinstance(item, list):
-            yield from flatten(item)
-        else:
-            yield item
+def flatten_packets(packet: "Packet") -> Generator["Packet", None, None]:
+    for p in packet.sub_packets:
+        if p.has_children:
+            yield from flatten_packets(p)
+        yield p
 
 
 class Packet:
@@ -77,7 +77,24 @@ class Packet:
 
     @property
     def value(self) -> Optional[int]:
-        return self._value
+        sub_values = [p.value for p in self.sub_packets]
+
+        if self._type_id == 0:
+            return sum(sub_values)
+        elif self._type_id == 1:
+            return np.prod(sub_values)
+        elif self._type_id == 2:
+            return min(sub_values)
+        elif self._type_id == 3:
+            return max(sub_values)
+        elif self._type_id == 4:
+            return self._value
+        elif self._type_id == 5:
+            return 1 if sub_values[0] > sub_values[1] else 0
+        elif self._type_id == 6:
+            return 1 if sub_values[0] < sub_values[1] else 0
+        elif self._type_id == 7:
+            return 1 if sub_values[0] == sub_values[1] else 0
 
     @property
     def bits_read(self) -> int:
@@ -87,22 +104,34 @@ class Packet:
     def sub_packets(self) -> List["Packet"]:
         return self._sub_packets
 
+    @property
+    def has_children(self) -> bool:
+        return self._type_id != 4
+
 
 @timer
-def puzzle_1(bit_stream: str) -> int:
-    root_packet = Packet(bit_stream)
+def puzzle_1(root_packet: Packet) -> int:
     version_sum = 0
 
     version_sum += root_packet.version
-    for p in flatten(root_packet.sub_packets)
-        version_sum += 
+    for p in flatten_packets(root_packet):
+        version_sum += p.version
+
+    return version_sum
+
 
 @timer
-def parse_input() -> str:
-    return hex_to_bin(get_input_data(day=16))
+def puzzle_2(root_packet: Packet) -> int:
+    return root_packet.value
+
+
+@timer
+def parse_input() -> Packet:
+    return Packet(hex_to_bin(get_input_data(day=16)))
 
 
 if __name__ == "__main__":
-    bit_stream = parse_input()
+    root_packet = parse_input()
 
-    print(puzzle_1(bit_stream))
+    print(puzzle_1(root_packet))
+    print(puzzle_2(root_packet))
