@@ -17,7 +17,6 @@ def flatten_packets(packet: "Packet") -> Generator["Packet", None, None]:
 class Packet:
     def __init__(self, data_stream: str) -> None:
         self._bits_read = 0
-        self._bits_read_padded = 0
 
         # Parse the header
         self._version = int(data_stream[:3], 2)
@@ -26,7 +25,6 @@ class Packet:
 
         self._value = None
         self._sub_packets: List[Packet] = []
-        self._last_stream_index = 0
 
         # Parse content
         body_stream = data_stream[6:]
