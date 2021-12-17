@@ -1,6 +1,6 @@
 from typing import Dict, List, Tuple
 from utils import get_input_data, timer
-from collections import defaultdict
+import sys
 import re
 
 POINT = Tuple[int, int]
@@ -8,21 +8,13 @@ TRAJECTORY = Tuple[int, int]
 AREA = Tuple[int, int, int, int]
 
 
-def check_point_in_area(point: POINT, area: AREA):
-    x, y = point
+def get_paths(
+    area: AREA,
+    max_steps: int,
+    y_velocity_range: int,
+    x_velocity_range: int
+) -> Dict[TRAJECTORY, List[POINT]]:
     ax, ax_m, ay, ay_m = area
-
-    return x >= ax and x < ax_m and y >= ay and y < ay_m
-
-
-@timer
-def puzzle_1(area: AREA) -> int:
-    ax, ax_m, ay, ay_m = area
-    print(ax, ax_m, ay, ay_m)
-
-    max_steps = 10
-    y_velocity_range = 20
-    x_velocity_range = 20
 
     paths: Dict[TRAJECTORY, List[POINT]] = {}
     
@@ -47,18 +39,34 @@ def puzzle_1(area: AREA) -> int:
 
                 # Check if in bounds
                 if (ax <= x <= ax_m) and (ay <= y <= ay_m):
-                    paths[(x_start_velocity, y_start_velocity)] = list(path)
-                    break
-                # Check if position is already past the target area
-                if x > ax_m or y >= ay_m:
+                    paths[(x_start_velocity, y_start_velocity)] = path
                     break
 
-    print(paths)
+                # Check if target is already missed
+                if x > ax_m and y > ay_m:
+                    break
+
+    return paths
+
+
+@timer
+def puzzle_1(area: AREA) -> int:
+    # Numbers found by just trying out different ones lol
+    paths = get_paths(area, 550, 300, 100)
+
+    highest_y = -sys.maxsize
+    for points in paths.values():
+        for point in points:
+            if point[1] > highest_y:
+                highest_y = point[1]   
+
+    return highest_y
 
 
 @timer
 def puzzle_2(area: AREA) -> int:
-    pass
+    return len(get_paths(area, 550, 300, 100))
+
 
 
 @timer
